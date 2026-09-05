@@ -13,6 +13,9 @@ class LoginWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
+        self.color_overlay = QFrame(central_widget)
+        self.color_overlay.setStyleSheet(f"background-color: {MainWindow.WINE_RED};")
+
         # -------Background Image (reusing MainWindow's blur logic)-------
 
         self.background = QLabel(central_widget)
@@ -20,7 +23,7 @@ class LoginWindow(QMainWindow):
         self.background.lower()
 
         self._bg_pixmap = MainWindow._load_blurred_pixmap(
-            "/Users/arijitshaw/Python_projects/Movie_ticket/client/resource/Background.jpg", blur_radius=10
+            "/Users/arijitshaw/Python_projects/Movie_ticket/client/resource/Background.jpg", blur_radius=4
         )
         if self._bg_pixmap.isNull():
             print("Failed to load background image.")

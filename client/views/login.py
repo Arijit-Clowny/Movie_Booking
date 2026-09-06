@@ -122,9 +122,9 @@ class LoginWindow(QMainWindow):
         login_button.setCursor(Qt.CursorShape.PointingHandCursor)
         login_button.clicked.connect(self._handel_login)
 
-        signup_button = QPushButton("Don't have an account? Sign up")
-        signup_button.setObjectName("linkButton")
-        signup_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.signup_link_button = QPushButton("Don't have an account? Sign up")
+        self.signup_link_button.setObjectName("linkButton")
+        self.signup_link_button.setCursor(Qt.CursorShape.PointingHandCursor)
 
         card_layout.addWidget(title)
         card_layout.addWidget(subtitle)
@@ -135,7 +135,7 @@ class LoginWindow(QMainWindow):
         card_layout.addWidget(login_button)
 
         card_layout.addWidget(
-            signup_button,
+            self.signup_link_button,
             alignment = Qt.AlignmentFlag.AlignCenter
         )
 

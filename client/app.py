@@ -20,11 +20,21 @@ def show_main_window(username):
 
 
 def show_signup_window():
+    signup_window.username_input.clear()
+    signup_window.email_input.clear()
+    signup_window.password_input.clear()
+    signup_window.confirm_password_input.clear()
+    signup_window.error_label.hide()
+
     signup_window.showMaximized()
     login_window.close()
 
 
 def show_login_window():
+    login_window.username_input.clear()
+    login_window.password_input.clear()
+    login_window.error_label.hide()
+
     login_window.showMaximized()
     signup_window.close()
 

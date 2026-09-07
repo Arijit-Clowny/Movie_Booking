@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import *
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt,Signal
 
 from client.models.movie import Movie
 from client.widgets.movie_card import MovieCard
@@ -113,7 +113,7 @@ class HomeView(QWidget):
         """Populate the row with placeholder movie data.
         Will be replaced with real TMDB data later."""
         mock_movies = [
-            Movie(title="Inception", rating=8.8, genres=["Sci-Fi", "Thriller"]),
+            Movie(title="Inception", rating=8.8, genres=["Sci-Fi", "Thriller"],language = "English",duration_minutes=148,synopsis="A skilled thief who steals corporate secrets through dream-sharing technology is given a chance at redemption if he can plant an idea into a target's subconscious.",cast=["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page"],crew=["Christopher Nolan (Director)"],showtimes=["2:00 PM", "5:30 PM", "9:00 PM"],),
             Movie(title="The Dark Knight", rating=9.0, genres=["Action", "Crime"]),
             Movie(title="Interstellar", rating=8.6, genres=["Sci-Fi", "Drama"]),
             Movie(title="Parasite", rating=8.5, genres=["Thriller", "Drama"]),
@@ -125,4 +125,10 @@ class HomeView(QWidget):
 
         for movie in mock_movies:
             card = MovieCard(movie)
+            card.clicked.connect(self._on_movie_clicked)
             self.row_layout.addWidget(card)
+
+    movie_selected = Signal(Movie)  # add this near the top of the class, e.g. right after class HomeView(QWidget):
+
+    def _on_movie_clicked(self, movie: Movie):
+        self.movie_selected.emit(movie)

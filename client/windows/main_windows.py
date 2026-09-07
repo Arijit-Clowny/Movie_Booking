@@ -81,8 +81,19 @@ class MainWindow(QMainWindow):
         main_layout.setAlignment(header_widget, Qt.AlignmentFlag.AlignTop)
 
         from client.views.home_view import HomeView
+        from client.views.movie_details_view import MovieDetailsViews
+
         self.home_view = HomeView()
-        main_layout.addWidget(self.home_view)
+        self.movie_details_view = MovieDetailsViews()
+
+        self.content_stack = QStackedWidget()
+        self.content_stack.addWidget(self.home_view)
+        self.content_stack.addWidget(self.movie_details_view)
+
+        main_layout.addWidget(self.content_stack)
+
+        self.home_view.movie_selected.connect(self._show_movie_details)
+        self.movie_details_view.back_requested.connect(self._show_home)
 
         # -------Footer Bar-------
         footer_widget = self._build_footer()
@@ -151,3 +162,10 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event):
         self._update_background_geometry()
         super().resizeEvent(event)
+
+    def _show_movie_details(self, movie):
+        self.movie_details_view.set_movie(movie)
+        self.content_stack.setCurrentWidget(self.movie_details_view)
+
+    def _show_home(self):
+        self.content_stack.setCurrentWidget(self.home_view)

@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import *
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 import hashlib
 
 from client.models.movie import Movie
@@ -7,6 +7,8 @@ from client.models.movie import Movie
 class MovieCard(QFrame):
 
     """ A card widget showing a movie's poster, title, rating, genre tags."""
+
+    clicked = Signal(Movie) # Emits the movie object when the card is clicked.
 
     CARD_WIDGET = 200
     POSTER_HEIGHT = 240
@@ -18,10 +20,14 @@ class MovieCard(QFrame):
 
         self.setFixedWidth(self.CARD_WIDGET)
         self.setObjectName("movieCard")
+        self.setCursor((Qt.CursorShape.PointingHandCursor))
         self.setStyleSheet("""
             #movieCard {
                 background-color: rgba(255, 255, 255, 15);
                 border-radius: 10px;
+            }
+            #movieCard:hover{
+            background-color: rgba(255, 255, 255, 30);
             }
             QLabel#titleLabel {
                 color: white;
@@ -44,6 +50,20 @@ class MovieCard(QFrame):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8,8,8,8)
         layout.setSpacing(6)
+
+        self.poster_label = QLabel()
+        self.poster_label.setFixedSize(self.CARD_WIDGET-16, self.POSTER_HEIGHT)
+        self.poster_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.poster_label.setWordWrap(True)
+        self.poster_label.setText(movie.title)
+        self.poster_label.setStyleSheet(f"""
+            background-color: {self._placeholder_color(movie.title)};
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            padding: 10px;
+        """)
 
         # -------------Poster------------
 
@@ -86,6 +106,11 @@ class MovieCard(QFrame):
         layout.addWidget(title_label)
         layout.addWidget(rating_label)
         layout.addLayout(genre_row)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.clicked.emit(self.movie)
+        super().mousePressEvent(event)
 
     @staticmethod
     def _placeholder_color(title: str) -> str:

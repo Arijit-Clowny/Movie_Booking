@@ -24,8 +24,9 @@ class MovieDetailsViews(QWidget):
 
         # ------Back button row------
 
-        back_row = QVBoxLayout()
+        back_row = QHBoxLayout()
         back_button = QPushButton("⬅ Back")
+        back_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         back_button.setCursor(Qt.CursorShape.PointingHandCursor)
         back_button.setStyleSheet("""
             QPushButton {
@@ -63,10 +64,12 @@ class MovieDetailsViews(QWidget):
         content_widget.setStyleSheet("background: transparent;")
         content_layout = QVBoxLayout(content_widget)
         content_layout.setSpacing(25)
+        content_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # -------Top section: poster (left) + quick facts (right)-------
         top_row = QHBoxLayout()
         top_row.setSpacing(30)
+        top_row.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.poster_label = QLabel()
         self.poster_label.setFixedSize(260, 380)

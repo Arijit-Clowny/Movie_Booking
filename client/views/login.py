@@ -23,7 +23,7 @@ class LoginWindow(QMainWindow):
         self.background.lower()
 
         self._bg_pixmap = MainWindow._load_blurred_pixmap(
-            "/Users/arijitshaw/Python_projects/Movie_ticket/client/resource/Background.jpg", blur_radius=4
+            "/Users/arijitshaw/Documents/Python_projects/Movie_ticket/client/resource/Background.jpg", blur_radius=4
         )
         if self._bg_pixmap.isNull():
             print("Failed to load background image.")

@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         self.background.lower()
 
         self._bg_pixmap = self._load_blurred_pixmap(
-            "/Users/arijitshaw/Python_projects/Movie_ticket/client/resource/Background.jpg",
+            "/Users/arijitshaw/Documents/Python_projects/Movie_ticket/client/resource/Background.jpg",
             blur_radius=4
         )
 

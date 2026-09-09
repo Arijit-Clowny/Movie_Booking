@@ -3,6 +3,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QImage
 from PIL import Image, ImageFilter
 
+from client.models.theatre import Theatre
+
 
 class MainWindow(QMainWindow):
 
@@ -80,20 +82,27 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(header_widget)
         main_layout.setAlignment(header_widget, Qt.AlignmentFlag.AlignTop)
 
+        # -------Views-------
         from client.views.home_view import HomeView
         from client.views.movie_details_view import MovieDetailsViews
+        from client.views.theatre_selection_view import TheatreSelectionView
 
         self.home_view = HomeView()
         self.movie_details_view = MovieDetailsViews()
+        self.theatre_selection_view = TheatreSelectionView()
 
         self.content_stack = QStackedWidget()
         self.content_stack.addWidget(self.home_view)
         self.content_stack.addWidget(self.movie_details_view)
+        self.content_stack.addWidget(self.theatre_selection_view)
 
         main_layout.addWidget(self.content_stack)
 
         self.home_view.movie_selected.connect(self._show_movie_details)
         self.movie_details_view.back_requested.connect(self._show_home)
+        self.movie_details_view.book_requested.connect(self._show_theatre_selection)
+        self.theatre_selection_view.back_requested.connect(self._show_movie_details_again)
+        self.theatre_selection_view.showtime_selected.connect(self._on_showtime_selected)
 
         # -------Footer Bar-------
         footer_widget = self._build_footer()
@@ -169,3 +178,31 @@ class MainWindow(QMainWindow):
 
     def _show_home(self):
         self.content_stack.setCurrentWidget(self.home_view)
+
+    def _show_theatre_selection(self, movie):
+        mock_theatres = [
+            Theatre(
+                name="PVR Cinemas - City Centre",
+                location="City Centre Mall, 2nd Floor",
+                showtimes=["10:00 AM", "1:30 PM", "5:00 PM", "8:30 PM"]
+            ),
+            Theatre(
+                name="INOX Grand",
+                location="Grand Avenue, Sector 12",
+                showtimes=["11:15 AM", "2:45 PM", "6:15 PM"]
+            ),
+            Theatre(
+                name="Cinepolis Downtown",
+                location="Downtown Plaza, Level 3",
+                showtimes=["12:00 PM", "4:00 PM", "9:00 PM"]
+            ),
+        ]
+        self.theatre_selection_view.set_movie(movie, mock_theatres)
+        self.content_stack.setCurrentWidget(self.theatre_selection_view)
+
+    def _show_movie_details_again(self):
+        self.content_stack.setCurrentWidget(self.movie_details_view)
+
+    def _on_showtime_selected(self, movie, theatre, time_str):
+        print(f"Selected: {movie.title} @ {theatre.name}, {time_str}")
+        # TODO: navigate to seat selection view next

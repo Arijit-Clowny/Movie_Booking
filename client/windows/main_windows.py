@@ -86,15 +86,18 @@ class MainWindow(QMainWindow):
         from client.views.home_view import HomeView
         from client.views.movie_details_view import MovieDetailsViews
         from client.views.theatre_selection_view import TheatreSelectionView
+        from client.views.seat_selection_view import SeatSelectionView
 
         self.home_view = HomeView()
         self.movie_details_view = MovieDetailsViews()
         self.theatre_selection_view = TheatreSelectionView()
+        self.seat_selection_view = SeatSelectionView()
 
         self.content_stack = QStackedWidget()
         self.content_stack.addWidget(self.home_view)
         self.content_stack.addWidget(self.movie_details_view)
         self.content_stack.addWidget(self.theatre_selection_view)
+        self.content_stack.addWidget(self.seat_selection_view)
 
         main_layout.addWidget(self.content_stack)
 
@@ -102,7 +105,9 @@ class MainWindow(QMainWindow):
         self.movie_details_view.back_requested.connect(self._show_home)
         self.movie_details_view.book_requested.connect(self._show_theatre_selection)
         self.theatre_selection_view.back_requested.connect(self._show_movie_details_again)
-        self.theatre_selection_view.showtime_selected.connect(self._on_showtime_selected)
+        self.theatre_selection_view.showtime_selected.connect(self._show_seat_selection)
+        self.seat_selection_view.back_requested.connect(self._show_theatre_selection_again)
+        self.seat_selection_view.booking_confirmed.connect(self._on_booking_confirmed)
 
         # -------Footer Bar-------
         footer_widget = self._build_footer()
@@ -203,6 +208,18 @@ class MainWindow(QMainWindow):
     def _show_movie_details_again(self):
         self.content_stack.setCurrentWidget(self.movie_details_view)
 
-    def _on_showtime_selected(self, movie, theatre, time_str):
-        print(f"Selected: {movie.title} @ {theatre.name}, {time_str}")
-        # TODO: navigate to seat selection view next
+    def _show_seat_selection(self, movie, theatre, time_str):
+        self.seat_selection_view.set_booking_context(movie, theatre, time_str)
+        self.content_stack.setCurrentWidget(self.seat_selection_view)
+
+    def _show_theatre_selection_again(self):
+        self.content_stack.setCurrentWidget(self.theatre_selection_view)
+
+    def _on_booking_confirmed(self, movie, theatre, time_str, seats):
+        seat_ids = ", ".join(s.seat_id for s in seats)
+        total = sum(s.price for s in seats)
+        print(
+            f"Booking confirmed: {movie.title} @ {theatre.name}, {time_str} "
+            f"— Seats: {seat_ids} — Total: ₹{total:.2f}"
+        )
+        # TODO: navigate to a booking confirmation view next

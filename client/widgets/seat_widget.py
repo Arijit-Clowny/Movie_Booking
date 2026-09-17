@@ -3,12 +3,12 @@ from PySide6.QtCore import Qt, Signal
 
 from client.models.seat import Seat
 
+
 class SeatWidget(QPushButton):
+    """A single clickable seat button. Visually reflects its state:
+    available, selected, booked, or premium."""
 
-    """ A Single clickable seat button. Visually reflects  its state:
-    available, selected, booked, or premium. """
-
-    toggled_selection = Signal(Seat, bool)  # seat, now_selected.
+    toggled_selection = Signal(Seat, bool)  # seat, now_selected
 
     AVAILABLE_STYLE = """
         QPushButton {
@@ -24,46 +24,46 @@ class SeatWidget(QPushButton):
     """
 
     PREMIUM_STYLE = """
-            QPushButton {
-                background-color: rgba(255, 215, 0, 40);
-                color: white;
-                border: 1px solid rgba(255, 215, 0, 100);
-                border-radius: 6px;
-                font-size: 11px;
-            }
-            QPushButton:hover {
-                background-color: rgba(255, 215, 0, 80);
-            }
-        """
+        QPushButton {
+            background-color: rgba(255, 215, 0, 40);
+            color: white;
+            border: 1px solid rgba(255, 215, 0, 100);
+            border-radius: 6px;
+            font-size: 11px;
+        }
+        QPushButton:hover {
+            background-color: rgba(255, 215, 0, 80);
+        }
+    """
 
     SELECTED_STYLE = """
-            QPushButton {
-                background-color: rgba(90, 200, 90, 220);
-                color: #111;
-                border: 1px solid rgba(90, 200, 90, 255);
-                border-radius: 6px;
-                font-size: 11px;
-                font-weight: bold;
-            }
-        """
+        QPushButton {
+            background-color: rgba(90, 200, 90, 220);
+            color: #111;
+            border: 1px solid rgba(90, 200, 90, 255);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+    """
 
     BOOKED_STYLE = """
-            QPushButton {
-                background-color: rgba(120, 120, 120, 80);
-                color: rgba(255, 255, 255, 100);
-                border: 1px solid rgba(120, 120, 120, 100);
-                border-radius: 6px;
-                font-size: 11px;
-            }
-        """
+        QPushButton {
+            background-color: rgba(120, 120, 120, 80);
+            color: rgba(255, 255, 255, 100);
+            border: 1px solid rgba(120, 120, 120, 100);
+            border-radius: 6px;
+            font-size: 11px;
+        }
+    """
 
-    def __int__(self ,seat: Seat):
+    def __init__(self, seat: Seat):
         super().__init__(seat.seat_id)
 
         self.seat = seat
-        self.is_selected  =False
+        self.is_selected = False
 
-        self.setFixedSize(36,32)
+        self.setFixedSize(36, 32)
 
         if seat.is_booked:
             self.setEnabled(False)
@@ -72,13 +72,13 @@ class SeatWidget(QPushButton):
         else:
             self.setCursor(Qt.CursorShape.PointingHandCursor)
             self._apply_unselected_style()
-            self.clicked.conect(self._on_clicked)
+            self.clicked.connect(self._on_clicked)
 
     def _apply_unselected_style(self):
         if self.seat.section == "Premium":
             self.setStyleSheet(self.PREMIUM_STYLE)
         else:
-            self.setStyleSHeet(self.AVAILABLE_STYLE)
+            self.setStyleSheet(self.AVAILABLE_STYLE)
 
     def _on_clicked(self):
         self.is_selected = not self.is_selected
@@ -89,14 +89,3 @@ class SeatWidget(QPushButton):
             self._apply_unselected_style()
 
         self.toggled_selection.emit(self.seat, self.is_selected)
-
-
-
-
-
-
-
-
-
-
-

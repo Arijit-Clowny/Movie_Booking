@@ -4,6 +4,8 @@ from PySide6.QtGui import QPixmap, QImage
 from PIL import Image, ImageFilter
 
 from client.models.theatre import Theatre
+from client.models.booking import Booking
+from client.views.booking_confirmation_view import BookingConfirmationView
 
 
 class MainWindow(QMainWindow):
@@ -92,12 +94,14 @@ class MainWindow(QMainWindow):
         self.movie_details_view = MovieDetailsViews()
         self.theatre_selection_view = TheatreSelectionView()
         self.seat_selection_view = SeatSelectionView()
+        self.booking_confirmation_view = BookingConfirmationView()
 
         self.content_stack = QStackedWidget()
         self.content_stack.addWidget(self.home_view)
         self.content_stack.addWidget(self.movie_details_view)
         self.content_stack.addWidget(self.theatre_selection_view)
         self.content_stack.addWidget(self.seat_selection_view)
+        self.content_stack.addWidget(self.booking_confirmation_view)
 
         main_layout.addWidget(self.content_stack)
 
@@ -108,6 +112,7 @@ class MainWindow(QMainWindow):
         self.theatre_selection_view.showtime_selected.connect(self._show_seat_selection)
         self.seat_selection_view.back_requested.connect(self._show_theatre_selection_again)
         self.seat_selection_view.booking_confirmed.connect(self._on_booking_confirmed)
+        self.booking_confirmation_view.done_requested.connect(self._show_home)
 
         # -------Footer Bar-------
         footer_widget = self._build_footer()
@@ -216,10 +221,14 @@ class MainWindow(QMainWindow):
         self.content_stack.setCurrentWidget(self.theatre_selection_view)
 
     def _on_booking_confirmed(self, movie, theatre, time_str, seats):
-        seat_ids = ", ".join(s.seat_id for s in seats)
-        total = sum(s.price for s in seats)
-        print(
-            f"Booking confirmed: {movie.title} @ {theatre.name}, {time_str} "
-            f"— Seats: {seat_ids} — Total: ₹{total:.2f}"
+        import random
+
+        booking = Booking(
+            movie=movie,
+            theatre=theatre,
+            time_str=time_str,
+            seats=seats,
+            booking_id=f"BK{random.randint(100000, 999999)}",
         )
-        # TODO: navigate to a booking confirmation view next
+        self.booking_confirmation_view.set_booking(booking)
+        self.content_stack.setCurrentWidget(self.booking_confirmation_view)

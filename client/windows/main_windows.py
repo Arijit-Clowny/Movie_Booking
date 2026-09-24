@@ -81,6 +81,10 @@ class MainWindow(QMainWindow):
         header_layout.addWidget(bookings_button)
         header_layout.addWidget(profile_button)
 
+        home_button.clicked.connect(self._show_home)
+        movies_button.clicked.connect(self._show_movies_placeholder)
+        bookings_button.clicked.connect(self._show_bookings_placeholder)
+
         main_layout.addWidget(header_widget)
         main_layout.setAlignment(header_widget, Qt.AlignmentFlag.AlignTop)
 
@@ -232,3 +236,9 @@ class MainWindow(QMainWindow):
         )
         self.booking_confirmation_view.set_booking(booking)
         self.content_stack.setCurrentWidget(self.booking_confirmation_view)
+
+    def _show_movies_placeholder(self):
+        print("Movies view not built yet — coming soon.")
+
+    def _show_bookings_placeholder(self):
+        print("My Bookings view not built yet — coming soon.")

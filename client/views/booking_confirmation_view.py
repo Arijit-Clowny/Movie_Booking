@@ -25,7 +25,7 @@ class BookingConfirmationView(QWidget):
         card.setStyleSheet(
             """
             #confirmationCard {
-                background-color: rgba(0, 0, 0, 140);
+                background-color: rgba(0, 0, 0, 90);
                 border-radius: 16px;
             }
             QLabel {

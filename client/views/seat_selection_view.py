@@ -181,7 +181,7 @@ class SeatSelectionView(QWidget):
 
     def set_booking_context(self, movie: Movie, theatre: Theatre, time_str: str):
         """Populate the view for a specific movie/theatre/showtime, generating
-        a fresh mock seat layout."""
+        a seat layout based on this theatre's own configuration."""
         self._current_movie = movie
         self._current_theatre = theatre
         self._current_time = time_str
@@ -190,14 +190,13 @@ class SeatSelectionView(QWidget):
         self.info_label.setText(f"{movie.title} - {theatre.name} - {time_str}")
         self._update_total()
 
-        # Clear any previous seat rows
         while self.seat_grid_layout.count():
             item = self.seat_grid_layout.takeAt(0)
             widget = item.widget()
             if widget:
                 widget.deleteLater()
 
-        seats = self._generate_mock_seats()
+        seats = self._generate_seats(theatre, time_str)
 
         rows = {}
         for seat in seats:
@@ -205,11 +204,11 @@ class SeatSelectionView(QWidget):
 
         for row_letter in sorted(rows.keys()):
             row_layout = QHBoxLayout()
-            row_layout.setSpacing(6)
+            row_layout.setSpacing(10)
 
             row_label = QLabel(row_letter)
-            row_label.setFixedWidth(20)
-            row_label.setStyleSheet("color: white; font-size: 12px; background: transparent;")
+            row_label.setFixedWidth(24)
+            row_label.setStyleSheet("color: white; font-size: 13px; background: transparent;")
             row_layout.addWidget(row_label)
 
             for seat in rows[row_letter]:
@@ -219,25 +218,24 @@ class SeatSelectionView(QWidget):
 
             self.seat_grid_layout.addLayout(row_layout)
 
-    def _generate_mock_seats(self) -> list[Seat]:
-        """Build an 8-row x 10-seat layout: rows A-B are Premium, C-H are Regular.
-        A few random seats are marked booked for realism."""
-        import random
+    def _generate_seats(self, theatre: Theatre, time_str: str) -> list[Seat]:
+        """Build seats based on this theatre's own row/seat configuration,
+        using the seat availability service so booked seats persist across
+        visits to the same theatre+showtime."""
+        from client.services.seat_availability_service import get_booked_seats
 
-        premium_rows = ["A", "B"]
-        regular_rows = ["C", "D", "E", "F", "G", "H"]
-        all_rows = premium_rows + regular_rows
-
-        booked_seat_ids = set(random.sample(
-            [f"{r}{n}" for r in all_rows for n in range(1, 11)],
-            k=8  # roughly 10% of 80 seats pre-booked
-        ))
+        all_seat_ids = [
+            f"{row}{number}"
+            for row in theatre.rows
+            for number in range(1, theatre.seats_per_row + 1)
+        ]
+        booked_seat_ids = get_booked_seats(theatre.name, time_str, all_seat_ids)
 
         seats = []
-        for row in all_rows:
-            section = "Premium" if row in premium_rows else "Regular"
+        for row in theatre.rows:
+            section = "Premium" if row in theatre.premium_rows else "Regular"
             price = self.PREMIUM_PRICE if section == "Premium" else self.REGULAR_PRICE
-            for number in range(1, 11):
+            for number in range(1, theatre.seats_per_row + 1):
                 seat = Seat(row=row, number=number, section=section, price=price)
                 if seat.seat_id in booked_seat_ids:
                     seat.is_booked = True

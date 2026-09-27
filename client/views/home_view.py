@@ -212,3 +212,12 @@ class HomeView(QWidget):
 
     def _on_movie_clicked(self, movie: Movie):
         self.movie_selected.emit(movie)
+
+    def _load_mock_movies(self):
+        """Populate the row with movies from the shared mock catalog."""
+        from client.services.mock_movie_data import get_all_movies
+
+        for movie in get_all_movies():
+            card = MovieCard(movie)
+            card.clicked.connect(self._on_movie_clicked)
+            self.row_layout.addWidget(card)

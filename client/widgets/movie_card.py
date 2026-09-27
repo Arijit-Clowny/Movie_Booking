@@ -23,11 +23,13 @@ class MovieCard(QFrame):
         self.setCursor((Qt.CursorShape.PointingHandCursor))
         self.setStyleSheet("""
             #movieCard {
-                background-color: rgba(255, 255, 255, 15);
+                background-color: rgba(0, 0, 0, 50);
+                border: 1px solid rgba(255, 255, 255, 25);
                 border-radius: 10px;
             }
-            #movieCard:hover{
-            background-color: rgba(255, 255, 255, 30);
+            #movieCard:hover {
+                background-color: rgba(0, 0, 0, 130);
+                border: 1px solid rgba(255, 255, 255, 50);
             }
             QLabel#titleLabel {
                 color: white;
@@ -40,7 +42,7 @@ class MovieCard(QFrame):
             }
             QLabel#genreTag {
                 color: white;
-                background-color: rgba(255, 255, 255, 25);
+                background-color: rgba(255, 255, 255, 30);
                 border-radius: 8px;
                 padding: 2px 8px;
                 font-size: 10px;

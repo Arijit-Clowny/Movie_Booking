@@ -1,21 +1,26 @@
 from PySide6.QtWidgets import *
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QImage
 from PIL import Image, ImageFilter
 
 from client.models.theatre import Theatre
 from client.models.booking import Booking
+from client.models.user import User
 from client.views.booking_confirmation_view import BookingConfirmationView
 
 
 class MainWindow(QMainWindow):
 
     WINE_RED = "rgba(90, 20, 30, 110)"
+    logout_requested = Signal()
 
-    def __init__(self):
+    def __init__(self, username: str = "Guest"):
         super().__init__()
 
         self.setWindowTitle("Movie Ticket Booking System")
+
+        self.current_user = User(username=username, email=f"{username.lower()}@example.com")
+        self._bookings_history = []  # in-memory list of completed Booking objects
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -81,10 +86,6 @@ class MainWindow(QMainWindow):
         header_layout.addWidget(bookings_button)
         header_layout.addWidget(profile_button)
 
-        home_button.clicked.connect(self._show_home)
-        movies_button.clicked.connect(self._show_movies_placeholder)
-        bookings_button.clicked.connect(self._show_bookings_placeholder)
-
         main_layout.addWidget(header_widget)
         main_layout.setAlignment(header_widget, Qt.AlignmentFlag.AlignTop)
 
@@ -93,12 +94,18 @@ class MainWindow(QMainWindow):
         from client.views.movie_details_view import MovieDetailsViews
         from client.views.theatre_selection_view import TheatreSelectionView
         from client.views.seat_selection_view import SeatSelectionView
+        from client.views.movies_view import MoviesView
+        from client.views.bookings_view import BookingsView
+        from client.views.profile_view import ProfileView
 
         self.home_view = HomeView()
         self.movie_details_view = MovieDetailsViews()
         self.theatre_selection_view = TheatreSelectionView()
         self.seat_selection_view = SeatSelectionView()
         self.booking_confirmation_view = BookingConfirmationView()
+        self.movies_view = MoviesView()
+        self.bookings_view = BookingsView()
+        self.profile_view = ProfileView()
 
         self.content_stack = QStackedWidget()
         self.content_stack.addWidget(self.home_view)
@@ -106,9 +113,19 @@ class MainWindow(QMainWindow):
         self.content_stack.addWidget(self.theatre_selection_view)
         self.content_stack.addWidget(self.seat_selection_view)
         self.content_stack.addWidget(self.booking_confirmation_view)
+        self.content_stack.addWidget(self.movies_view)
+        self.content_stack.addWidget(self.bookings_view)
+        self.content_stack.addWidget(self.profile_view)
 
         main_layout.addWidget(self.content_stack)
 
+        # -------Header button connections-------
+        home_button.clicked.connect(self._show_home)
+        movies_button.clicked.connect(self._show_movies)
+        bookings_button.clicked.connect(self._show_bookings)
+        profile_button.clicked.connect(self._show_profile)
+
+        # -------View signal connections-------
         self.home_view.movie_selected.connect(self._show_movie_details)
         self.movie_details_view.back_requested.connect(self._show_home)
         self.movie_details_view.book_requested.connect(self._show_theatre_selection)
@@ -117,6 +134,8 @@ class MainWindow(QMainWindow):
         self.seat_selection_view.back_requested.connect(self._show_theatre_selection_again)
         self.seat_selection_view.booking_confirmed.connect(self._on_booking_confirmed)
         self.booking_confirmation_view.done_requested.connect(self._show_home)
+        self.movies_view.movie_selected.connect(self._show_movie_details)
+        self.profile_view.logout_requested.connect(self._handle_logout)
 
         # -------Footer Bar-------
         footer_widget = self._build_footer()
@@ -234,11 +253,20 @@ class MainWindow(QMainWindow):
             seats=seats,
             booking_id=f"BK{random.randint(100000, 999999)}",
         )
+        self._bookings_history.append(booking)
         self.booking_confirmation_view.set_booking(booking)
         self.content_stack.setCurrentWidget(self.booking_confirmation_view)
 
-    def _show_movies_placeholder(self):
-        print("Movies view not built yet — coming soon.")
+    def _show_movies(self):
+        self.content_stack.setCurrentWidget(self.movies_view)
 
-    def _show_bookings_placeholder(self):
-        print("My Bookings view not built yet — coming soon.")
+    def _show_bookings(self):
+        self.bookings_view.set_bookings(self._bookings_history)
+        self.content_stack.setCurrentWidget(self.bookings_view)
+
+    def _show_profile(self):
+        self.profile_view.set_user(self.current_user, self._bookings_history)
+        self.content_stack.setCurrentWidget(self.profile_view)
+
+    def _handle_logout(self):
+            self.logout_requested.emit()

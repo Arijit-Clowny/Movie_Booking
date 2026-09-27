@@ -13,10 +13,25 @@ main_window = None
 
 def show_main_window(username):
     global main_window
-    main_window = MainWindow()
+    main_window = MainWindow(username=username)
+    main_window.logout_requested.connect(handle_logout)
     main_window.showMaximized()
     login_window.close()
     signup_window.close()
+
+
+def handle_logout():
+    global main_window
+
+    login_window.username_input.clear()
+    login_window.password_input.clear()
+    login_window.error_label.hide()
+
+    login_window.showMaximized()
+
+    if main_window is not None:
+        main_window.close()
+        main_window = None
 
 
 def show_signup_window():

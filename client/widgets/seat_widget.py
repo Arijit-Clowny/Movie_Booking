@@ -63,7 +63,7 @@ class SeatWidget(QPushButton):
         self.seat = seat
         self.is_selected = False
 
-        self.setFixedSize(36, 32)
+        self.setFixedSize(46, 42)
 
         if seat.is_booked:
             self.setEnabled(False)

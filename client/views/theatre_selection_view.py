@@ -105,7 +105,8 @@ class TheatreSelectionView(QWidget):
         card.setObjectName("theatreCard")
         card.setStyleSheet("""
             #theatreCard {
-                background-color: rgba(255, 255, 255, 15);
+                background-color: rgba(0, 0, 0, 50);
+                border: 1px solid rgba(255, 255, 255, 30);
                 border-radius: 10px;
             }
             QLabel#theatreName {

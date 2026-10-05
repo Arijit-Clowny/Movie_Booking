@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from sqlalchemy import String, Text, Integer, Float
 from sqlalchemy.orm import Mapped, mapped_column
 

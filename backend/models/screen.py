@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, String, UniqueConstraint
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.database import Base
@@ -21,11 +21,3 @@ class Screen(Base):
         nullable = False
     )
 
-    __table_args__ = (
-        UniqueConstraint(
-        "screen_id",
-        "show_date",
-        "show_time",
-        name =  "unique_show_datetime"
-        ),
-    )

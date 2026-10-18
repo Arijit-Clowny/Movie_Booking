@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint, Date, Time
 from sqlalchemy.orm import Mapped, mapped_column
 
 from datetime import date, time
@@ -24,12 +24,20 @@ class show(Base):
     )
 
     show_date : Mapped[date] = mapped_column(
-        date,
+        Date,
         nullable = False
     )
 
     show_time : Mapped[time] = mapped_column(
-        time,
+        Time,
         nullable = False
     )
 
+    __table_args__ = (
+        UniqueConstraint(
+        "screen_id",
+        "show_date",
+        "show_time",
+        name =  "unique_show_datetime"
+        ),
+    )

@@ -1,4 +1,4 @@
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from datetime import date, time
@@ -30,6 +30,6 @@ class show(Base):
 
     show_time : Mapped[time] = mapped_column(
         time,
-        nuullable = False
+        nullable = False
     )
 

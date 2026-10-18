@@ -1,5 +1,7 @@
-from sqlalchemy import String, ForeignKey , Date, Time
+from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
+
+from datetime import date, time
 
 from backend.database import Base
 
@@ -21,13 +23,13 @@ class show(Base):
         nullable = False
     )
 
-    show_date : Mapped[Date] = mapped_column(
-        Date,
+    show_date : Mapped[date] = mapped_column(
+        date,
         nullable = False
     )
 
     show_time : Mapped[time] = mapped_column(
-        Time,
+        time,
         nuullable = False
     )
 

@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.database import Base
@@ -19,4 +19,13 @@ class Screen(Base):
     theatre_id : Mapped[int] = mapped_column(
         ForeignKey("theatres.theatre_id"),
         nullable = False
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+        "screen_id",
+        "show_date",
+        "show_time",
+        name =  "unique_show_datetime"
+        ),
     )

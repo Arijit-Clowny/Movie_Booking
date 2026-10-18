@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.database import Base
 
-class Movies(Base):
+class Movie(Base):
     __tablename__ = "movies"
 
     movie_id: Mapped[int] = mapped_column(
